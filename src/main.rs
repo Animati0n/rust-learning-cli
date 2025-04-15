@@ -1,4 +1,7 @@
+use std::io::prelude::*;
 use clap::Parser;
+use std::fs::File;
+use std::io::BufReader;
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
@@ -9,16 +12,26 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn main() {
+fn main()-> std::io::Result<()> {
 
     let args = Cli::parse();
     
-    let content= std::fs::read_to_string(&args.path).expect("Could not read fle");
+    let file=File::open(&args.path)?;
+    let reader = BufReader::new(file);
     
+    println!("File \n {:?}",reader);
+    
+    //let mut line = String::new();
+    
+    let content = reader.lines();
+    
+    println!("Files \n {:?}",content);
+
     for line in content.lines(){
         if line.contains(&args.pattern){
             println!("{}",line);
         }
     }
+   Ok(())
 }
 
